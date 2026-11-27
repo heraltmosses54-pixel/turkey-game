@@ -143,22 +143,31 @@ export function drawTurkey(ctx, turkey, time) {
   const legSwing = turkey.onGround ? Math.sin(turkey.runCycle * 2.4) * 12 : 4;
   const airTuck = turkey.onGround ? 0 : 8;
 
-  // Tail fan: five feathers fanning out behind.
+  // Tail fan: five feathers fanning out from ONE pivot at the rear of
+  // the body, so the tail reads as part of the bird, not loose parts.
+  // (The old fan rotated each feather around the ground point, which
+  // threw feathers far from the body — the "mutilated" look.)
   const featherColors = ['#c0392b', '#e67e22', '#f1c40f', '#d35400', '#922b21'];
+  ctx.save();
+  ctx.translate(-22, -32); // pivot inside the body's rear edge
   for (let i = 0; i < 5; i++) {
-    const angle = -Math.PI / 2 + (i - 2) * 0.42;
+    // Fan from slightly down-back to up-back; the feather is drawn
+    // along the local -x axis, so a positive angle cocks it upward.
+    const angle = 0.3 + (i - 2) * 0.3;
     ctx.save();
     ctx.rotate(angle);
+    // Long ellipse: base (+2) sits inside the body, tip (-36) out back.
     ctx.fillStyle = featherColors[i];
     ctx.beginPath();
-    ctx.ellipse(-34, -26, 9, 30, 0, 0, Math.PI * 2);
+    ctx.ellipse(-17, 0, 19, 8, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.beginPath();
-    ctx.ellipse(-34, -44, 4, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(-28, 0, 7, 3.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
+  ctx.restore();
 
   // Legs.
   ctx.strokeStyle = '#e8a33d';
